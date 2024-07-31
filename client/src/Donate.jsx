@@ -6,41 +6,56 @@ import { useState } from "react";
 
 export default function Donate({state}){
 
+    const [name, setName] = useState('')
+    const [message, setMessage] = useState('')
+    const [amount, setAmount] = useState('1')
+
     
     console.log('State:', state);
     console.log('Contract:', state.contract);
 
-    const buyItem = async(event)=>{
+    const donate = async(event)=>{
         event.preventDefault();
         const {contract}=state;
-        const name = document.querySelector("#name").value;
-        const message = document.querySelector("#message").value;
-        const amountValue = document.querySelector("#amount").value;
-     
-        const amount = {value:parseEther(amountValue.toString())}
-        //const amount = {value:parseEther("5.5")}
-        const transaction = await contract.buyItem(name,message,amount)
-        await transaction.wait();
-        alert("Transaction is successul");
-        window.location.reload();
-      }
+        
+        try{
+            const value = ethers.utils.parseEther(amount);
+            const transaction = await contract.buyItem(name, message, { value });
+            await transaction.wait()
+            alert("Thank you for the donation")
+            window.location.reload()
+
+        }catch(error){
+            console.error(error)
+            alert("Failed")
+        }
+
+    }
   
 
     return(
         <div className=" flex justify-center">
 
-            <form onSubmit={buyItem}>
+            <form onSubmit={donate}>
 
             <div className="mx-auto my-4">
-                <input type="text" required="required" id="name" placeholder="Name" />
+                <input type="text" required="required" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name" />
             </div>
 
             <div  className="mx-auto my-4">
-                <input type="text" required="required" id="message" placeholder="Message"/>
+                <input type="text" required="required" 
+                 value={message}
+                 onChange={(e) => setMessage(e.target.value)}
+                placeholder="Message"/>
             </div>
             
             <div  className="mx-auto my-4">
-                <select name="amount" id="amount">
+                <select name="amount" value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                >
                 <option value="1">1 ETH</option>
                 <option value="2">2 ETH</option>
                 <option value="5">5 ETH</option>
@@ -63,3 +78,30 @@ export default function Donate({state}){
     )
     
 }
+/*
+
+     <input type="text"
+                            placeholder="Enter amount"
+                            class="bg-gray-50  border border-gray-300 
+                            text-gray-900 text-sm rounded-lg 
+                            focus:ring-blue-500 focus:border-blue-500 
+                            block h-[55px] w-[215px] md:w-[240px] p-2.5 
+                            dark:bg-gray-700 dark:border-gray-600 
+                            dark:placeholder-gray-400 dark:text-white 
+                            dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            value={deposit}
+                            onChange = {(e) => setDeposit(e.target.value)}
+                            
+                            />
+                           <button 
+                                class="text-white 
+                                
+                                bg-teal-400
+                                dark:bg-violet-400
+                                h-[50px] focus:ring-4 
+                                focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 
+                                font-medium rounded-lg text-sm px-5 py-4 text-center 
+                                me-2 mb-2 w-[210px] md:w-[240px] mt-4 md:mt-0 "
+                                 onClick={handleDeposit}> Deposit
+                            </button>  
+*/
