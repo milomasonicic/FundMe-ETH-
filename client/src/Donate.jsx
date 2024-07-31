@@ -8,7 +8,7 @@ export default function Donate({state}){
 
     const [name, setName] = useState('')
     const [message, setMessage] = useState('')
-    const [amount, setAmount] = useState('1')
+    const [amount, setAmount] = useState(1)
 
     
     console.log('State:', state);
@@ -19,14 +19,18 @@ export default function Donate({state}){
         const {contract}=state;
         
         try{
-            const value = ethers.utils.parseEther(amount);
-            const transaction = await contract.buyItem(name, message, { value });
+          
+            const transaction = await contract.buyItem(name, message, { 
+                value: ethers.parseEther(amount)
+             });
+            
             await transaction.wait()
             alert("Thank you for the donation")
             window.location.reload()
 
         }catch(error){
-            console.error(error)
+            console.error("Transaction error:", error);
+      
             alert("Failed")
         }
 
